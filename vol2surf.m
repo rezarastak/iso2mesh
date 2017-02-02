@@ -169,8 +169,20 @@ if(~isempty(img))
 	  end
           perturb=1e-4*abs(max(isovalues));
           if(all(newimg>isovalues(i)-perturb)) perturb=-perturb;  end
-          [v0,f0]=vol2restrictedtri(newimg,isovalues(i)-perturb,regions(i,:),...
-                     sum(newdim.*newdim)*2,30,radbound,distbound,maxsurfnode);
+          if (isstruct(opt) & length(opt)==maxlevel & isfield(opt(i),'minelem'))
+              j = i;
+              while true
+                  [v0,f0]=vol2restrictedtri(newimg,isovalues(i)-perturb,regions(j,:),...
+                      sum(newdim.*newdim)*2,30,radbound,distbound,maxsurfnode);
+                  if size(f0,1) > opt.minelem
+                      break;
+                  end
+                  j = j + 1;
+              end
+          else
+              [v0,f0]=vol2restrictedtri(newimg,isovalues(i)-perturb,regions(i,:),...
+                  sum(newdim.*newdim)*2,30,radbound,distbound,maxsurfnode);
+          end
 
 	  if(~isempty(surfside))
             newimg=newimg0;
